@@ -1,0 +1,822 @@
+/* ---------- Theme ---------- */
+
+:root {
+  --bg: #000;
+  --fg: #fff;
+  --px: 4px; /* one "pixel" in the retro grid */
+  --font-pixel: "Press Start 2P", ui-monospace, monospace;
+  --font-body: "VT323", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #fff;
+    --fg: #000;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #000;
+  --fg: #fff;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #fff;
+  --fg: #000;
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  line-height: 1.35;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-pixel);
+  font-weight: normal;
+  line-height: 1.5;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: var(--px) dashed var(--fg);
+  outline-offset: var(--px);
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Pixel-notched frame: four offset shadows instead of a border,
+   which leaves the corners empty like an SNES menu box. */
+.window,
+.dialog,
+.quest,
+.inventory li,
+.press-start,
+.stats-card {
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--fg),
+    0 var(--px) 0 0 var(--fg),
+    calc(var(--px) * -1) 0 0 0 var(--fg),
+    var(--px) 0 0 0 var(--fg);
+}
+
+/* ---------- Top bar ---------- */
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg);
+  border-bottom: var(--px) solid var(--fg);
+}
+
+.logo {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-left: auto;
+}
+
+.menu a {
+  position: relative;
+  display: inline-block;
+  padding-left: 1.25em;
+  text-decoration: none;
+}
+
+.menu a {
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Game-menu cursor that appears on hover/focus */
+.menu a::before {
+  content: "\25B6";
+  position: absolute;
+  left: 0;
+  visibility: hidden;
+}
+
+.menu a:hover::before,
+.menu a:focus-visible::before {
+  visibility: visible;
+  animation: blink 0.8s steps(1) infinite;
+}
+
+.theme-toggle {
+  display: none; /* shown only when JS is available */
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.js .theme-toggle {
+  display: grid;
+  place-items: center;
+}
+
+/* Pixel coin, drawn at 2px per pixel; it spins when the theme flips */
+.theme-toggle-icon {
+  display: block;
+  width: 20px;
+  height: 24px;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: translateY(-2px);
+}
+
+.theme-toggle.is-flipping .theme-toggle-icon {
+  animation: coin-flip 0.4s steps(4);
+}
+
+@keyframes coin-flip {
+  50% {
+    transform: scaleX(0.15);
+  }
+}
+
+/* ---------- Layout ---------- */
+
+main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.window {
+  position: relative;
+  margin: 5rem var(--px);
+  padding: 2.5rem 2rem 2rem;
+}
+
+.window-title {
+  position: absolute;
+  top: 0;
+  left: 1.5rem;
+  transform: translateY(-50%);
+  padding: 0 0.75rem;
+  background: var(--bg);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.sub-title {
+  margin: 2rem 0 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 5rem);
+  min-height: calc(100svh - 5rem);
+  text-align: center;
+}
+
+.player-tag {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+}
+
+.hero-name {
+  font-size: clamp(1.75rem, 7vw, 3.5rem);
+  text-transform: uppercase;
+  text-shadow: var(--px) var(--px) 0 var(--bg), calc(var(--px) * 2) calc(var(--px) * 2) 0 var(--fg);
+}
+
+.hero-role {
+  margin: 1.5rem 0 3rem;
+  font-size: 1.75rem;
+}
+
+.press-start {
+  margin: var(--px);
+  padding: 1rem 1.5rem;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  text-decoration: none;
+  animation: blink 1.2s steps(1) infinite;
+}
+
+.press-start:hover,
+.press-start:focus-visible {
+  animation: none;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---------- Dialog box ---------- */
+
+.dialog {
+  position: relative;
+  margin: var(--px);
+  padding: 1.25rem 1.5rem 1.75rem;
+}
+
+.dialog p {
+  margin: 0;
+}
+
+.dialog p + p {
+  margin-top: 1rem;
+}
+
+/* Blinking "next" arrow like an RPG text box */
+.dialog::after {
+  content: "\25BC";
+  position: absolute;
+  right: 1rem;
+  bottom: 0.5rem;
+  font-size: 1rem;
+  animation: blink 1s steps(1) infinite;
+}
+
+/* ---------- About ---------- */
+
+.stat-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  padding: 0.5rem 0;
+  border-bottom: var(--px) dotted var(--fg);
+}
+
+.stat-list li:last-child {
+  border-bottom: 0;
+}
+
+.stat-label {
+  min-width: 9rem;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  line-height: 2.2;
+  text-transform: uppercase;
+}
+
+/* ---------- Skills ---------- */
+
+.inventory {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 1.25rem;
+}
+
+.inventory li {
+  margin: var(--px);
+  padding: 0.75rem 1rem;
+  transition: none;
+}
+
+.inventory li::before {
+  content: "\25A0  ";
+  white-space: pre;
+}
+
+.inventory li:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---------- Projects ---------- */
+
+.quest-list {
+  display: grid;
+  gap: 2rem;
+  counter-reset: quest;
+}
+
+.quest {
+  margin: var(--px);
+  padding: 1.5rem;
+  counter-increment: quest;
+}
+
+.quest-title {
+  font-size: 0.8125rem;
+}
+
+.quest-title::before {
+  content: counter(quest, decimal-leading-zero) "  ";
+  white-space: pre;
+}
+
+.quest p {
+  margin: 1rem 0 1.25rem;
+}
+
+.quest-link {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: var(--px) solid var(--fg);
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  text-decoration: none;
+}
+
+.quest-link::after {
+  content: " \25B6";
+}
+
+.quest-link:hover,
+.quest-link:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---------- Star Wars ---------- */
+
+#star-wars {
+  text-align: center;
+}
+
+.saga-label {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+}
+
+.saga-episode {
+  margin: 1rem 0 2rem;
+  font-family: var(--font-pixel);
+  font-size: clamp(1rem, 4vw, 1.5rem);
+}
+
+.saber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+}
+
+.saber-hilt {
+  width: 3rem;
+  height: 1rem;
+  background:
+    repeating-linear-gradient(90deg, var(--fg) 0 var(--px), var(--bg) var(--px) calc(var(--px) * 2));
+  border: var(--px) solid var(--fg);
+}
+
+.saber-blade {
+  width: min(60vw, 20rem);
+  height: calc(var(--px) * 2);
+  background: var(--fg);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+/* Blade extends in pixel-sized steps when scrolled into view */
+.saber.is-lit .saber-blade {
+  transform: scaleX(1);
+  transition: transform 0.6s steps(10);
+}
+
+/* Without JS the saber is simply shown already lit */
+html:not(.js) .saber-blade {
+  transform: scaleX(1);
+}
+
+.quote {
+  margin: 2rem 0 0;
+  font-size: 2rem;
+}
+
+.quote p {
+  margin: 0;
+}
+
+/* ---------- Contact ---------- */
+
+.contact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 3rem;
+}
+
+.contact-list a {
+  display: inline-block;
+  text-decoration: none;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
+.contact-list a:hover,
+.contact-list a:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---------- Skateboarding easter egg ---------- */
+
+/* Needs JS to do anything, so it's only shown when JS is running */
+.skate-game {
+  display: none;
+  text-align: center;
+}
+
+.js .skate-game {
+  display: block;
+}
+
+.skater {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0.5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.skater-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.skater-rider,
+.skater-board,
+.skater-tooth {
+  transform-box: fill-box;
+}
+
+/* She tips over her front foot */
+.skater-rider {
+  transform-origin: 100% 100%;
+}
+
+.skater-board {
+  transform-origin: 50% 50%;
+}
+
+.skater-tooth {
+  opacity: 0;
+}
+
+.skater:hover .skater-rider,
+.skater:focus-visible .skater-rider {
+  transform: translateY(-1px);
+}
+
+.skater-ouch {
+  position: absolute;
+  top: 30%;
+  left: 68%;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  visibility: hidden;
+}
+
+/* Trick: ollie + kickflip, board lands upside down, she falls on her face */
+.skater.is-playing .skater-rider {
+  animation: rider-fall 1.6s steps(3) forwards;
+}
+
+.skater.is-playing .skater-board {
+  animation: board-flip 1.6s steps(3) forwards;
+}
+
+.skater.is-playing .skater-tooth-in {
+  animation: tooth-out 1.6s steps(1) forwards;
+}
+
+.skater.is-playing .skater-tooth {
+  animation: tooth-fly 2s steps(3) forwards;
+}
+
+.skater.is-playing .skater-ouch {
+  animation: ouch 1.6s steps(1) forwards;
+}
+
+/* Final pose, also used directly when motion is reduced */
+.skater.is-done .skater-rider {
+  transform: translate(0, 4px) rotate(90deg);
+}
+
+.skater.is-done .skater-board {
+  transform: translate(-8px, 0) rotate(180deg);
+}
+
+.skater.is-done .skater-tooth-in {
+  opacity: 0;
+}
+
+.skater.is-done .skater-tooth {
+  opacity: 1;
+  transform: none;
+}
+
+.skater.is-done .skater-ouch {
+  visibility: visible;
+}
+
+.skater.is-playing,
+.skater.is-done {
+  cursor: default;
+}
+
+@keyframes rider-fall {
+  0% { transform: none; }
+  20%, 35% { transform: translateY(-6px); }
+  50% { transform: translateY(0); }
+  70%, 100% { transform: translate(0, 4px) rotate(90deg); }
+}
+
+@keyframes board-flip {
+  0% { transform: none; }
+  20% { transform: translateY(-6px) rotate(0deg); }
+  35% { transform: translateY(-6px) rotate(180deg); }
+  50% { transform: translate(-4px, 0) rotate(180deg); }
+  100% { transform: translate(-8px, 0) rotate(180deg); }
+}
+
+@keyframes tooth-out {
+  0%, 69% { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
+
+@keyframes tooth-fly {
+  0%, 55% { opacity: 0; transform: translate(-10px, -4px); }
+  56% { opacity: 1; transform: translate(-10px, -4px); }
+  75% { opacity: 1; transform: translate(-5px, -10px); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes ouch {
+  0%, 69% { visibility: hidden; }
+  70%, 100% { visibility: visible; }
+}
+
+.skate-hint {
+  margin: 1rem 0 0;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  animation: blink 1.2s steps(1) infinite;
+}
+
+.skate-hint[hidden] {
+  display: none;
+}
+
+.stats-card {
+  margin: 1.5rem var(--px) var(--px);
+  padding: 1.25rem 1.5rem 1.5rem;
+  text-align: left;
+}
+
+.stats-card[hidden] {
+  display: none;
+}
+
+.stats-title {
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.stats {
+  margin: 0;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.stat dt {
+  margin: 0;
+}
+
+.stat dd {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.stat-value {
+  min-width: 4.5em;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+}
+
+.stat-bar {
+  display: block;
+  width: 8rem;
+  height: 1rem;
+  padding: 2px;
+  border: var(--px) solid var(--fg);
+}
+
+/* Segmented fill like an RPG HP bar */
+.stat-bar-fill {
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--fg) 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+  /* Size segments to the full bar so a 10% fill shows exactly one */
+  background-size: calc(8rem - var(--px) * 2 - 4px) 100%;
+}
+
+.stat-bar-fill.is-max {
+  animation: blink 0.6s steps(1) infinite;
+}
+
+.retry {
+  margin-top: 1rem;
+  padding: 0.25rem 0.75rem;
+  border: var(--px) solid var(--fg);
+  background: none;
+  color: inherit;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  cursor: pointer;
+}
+
+.retry:hover,
+.retry:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+@media (max-width: 720px) {
+  .stat {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  padding: 2rem 1.5rem;
+  border-top: var(--px) solid var(--fg);
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+}
+
+/* ---------- Typewriter text ---------- */
+
+.typewriter-cursor::after {
+  content: "_";
+  animation: blink 0.6s steps(1) infinite;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 720px) {
+  body {
+    font-size: 1.35rem;
+  }
+
+  .top-bar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .menu {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .theme-toggle,
+  .js .theme-toggle {
+    margin-left: auto;
+  }
+
+  html {
+    scroll-padding-top: 8rem;
+  }
+
+  main {
+    padding: 0 1rem;
+  }
+
+  .window {
+    padding: 2.25rem 1.25rem 1.5rem;
+  }
+
+  .stat-label {
+    min-width: 0;
+    width: 100%;
+  }
+}
